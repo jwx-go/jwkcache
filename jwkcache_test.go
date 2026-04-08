@@ -22,7 +22,7 @@ import (
 	"github.com/lestrrat-go/jwx/v4/jwk"
 	"github.com/stretchr/testify/require"
 
-	"github.com/jwx-go/jwkcache"
+	"github.com/jwx-go/jwkcache/v4"
 )
 
 func generateRsaJwk(t *testing.T) jwk.Key {

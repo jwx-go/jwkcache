@@ -1,4 +1,4 @@
-module github.com/jwx-go/jwkcache
+module github.com/jwx-go/jwkcache/v4
 
 go 1.26.0
 

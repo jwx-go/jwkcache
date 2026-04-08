@@ -3,7 +3,7 @@
 // This package was extracted from the jwk package to keep the core
 // jwx module free of the httprc dependency. Import and use directly:
 //
-//	import "github.com/jwx-go/jwkcache"
+//	import "github.com/jwx-go/jwkcache/v4"
 //
 //	cache, err := jwkcache.NewCache(ctx, httprc.NewClient())
 //	cache.Register(ctx, url)
