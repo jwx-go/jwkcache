@@ -15,19 +15,7 @@ Requires `GOEXPERIMENT=jsonv2`.
 ## Usage
 
 ```go
-import (
-    "github.com/lestrrat-go/httprc/v3"
-    "github.com/jwx-go/jwkcache/v4"
-)
-
-// Create a cache
-cache, err := jwkcache.NewCache(ctx, httprc.NewClient())
-
-// Register a URL to be fetched and refreshed automatically
-cache.Register(ctx, "https://example.com/.well-known/jwks.json")
-
-// Retrieve the cached key set
-set, err := cache.Lookup(ctx, "https://example.com/.well-known/jwks.json")
+import _ "github.com/jwx-go/jwkcache/v4"
 ```
 
 ### Register Options
