@@ -1,13 +1,9 @@
 // Package jwkcache provides JWK Set caching backed by httprc.
 //
 // This package was extracted from the jwk package to keep the core
-// jwx module free of the httprc dependency. Import and use directly:
+// jwx module free of the httprc dependency. Import for side effects:
 //
-//	import "github.com/jwx-go/jwkcache/v4"
-//
-//	cache, err := jwkcache.NewCache(ctx, httprc.NewClient())
-//	cache.Register(ctx, url)
-//	set, err := cache.Lookup(ctx, url)
+//	import _ "github.com/jwx-go/jwkcache/v4"
 package jwkcache
 
 import (
