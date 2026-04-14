@@ -36,3 +36,25 @@ import _ "github.com/jwx-go/jwkcache/v4"
 ### Fetcher
 
 `NewFetcher(cache)` wraps a `Cache` as a `jwk.Fetcher`, suitable for passing to APIs that accept one.
+
+## Security
+
+jwkcache does not validate URLs itself. URL policy lives on the
+`httprc.Client` you pass to `NewCache`, and `httprc.NewClient` defaults
+to `httprc.InsecureWhitelist{}` — every URL is allowed. That default is
+fine when the URLs you register are hard-coded or come from trusted
+configuration, but it is **not** safe when a URL can be influenced by
+untrusted input — most commonly a `jku` header copied out of an
+untrusted JWS.
+
+For untrusted URLs, construct the `httprc.Client` with an explicit
+whitelist:
+
+- `httprc.NewMapWhitelist()` for an exact set of URLs,
+- `httprc.NewRegexpWhitelist()` with patterns anchored as
+  `^https://your\.host/`,
+- or a custom implementation of `httprc.Whitelist`.
+
+For additional defense against redirect-to-private-IP and DNS-rebinding
+attacks, pass an `http.Client` via `httprc.WithHTTPClient` whose
+`Transport.DialContext` validates resolved addresses.

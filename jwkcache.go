@@ -4,6 +4,24 @@
 // jwx module free of the httprc dependency. Import for side effects:
 //
 //	import _ "github.com/jwx-go/jwkcache/v4"
+//
+// # Security
+//
+// jwkcache does not validate URLs itself; URL policy is the job of the
+// httprc.Client passed to NewCache. httprc.NewClient defaults to
+// httprc.InsecureWhitelist{} — every URL is allowed. That default is
+// fine when the URLs you register are hard-coded or come from trusted
+// configuration, but it is NOT safe when a URL can be influenced by
+// untrusted input — most commonly a `jku` header copied out of an
+// untrusted JWS.
+//
+// For untrusted URLs, construct the httprc.Client with an explicit
+// whitelist: httprc.MapWhitelist for an exact set of URLs,
+// httprc.RegexpWhitelist with patterns anchored as ^https://your\.host/,
+// or a custom implementation of httprc.Whitelist. For additional
+// defense against redirect-to-private-IP and DNS-rebinding attacks,
+// pass an http.Client whose Transport.DialContext validates resolved
+// addresses via httprc.WithHTTPClient.
 package jwkcache
 
 import (
@@ -70,6 +88,12 @@ func (t Transformer) Transform(_ context.Context, res *http.Response) (jwk.Set, 
 }
 
 // NewCache creates a new Cache.
+//
+// The supplied httprc.Client is the trust boundary for URL policy. If
+// any URL registered with this cache can be influenced by untrusted
+// input (e.g. a `jku` header), the client MUST be constructed with
+// httprc.WithWhitelist(...); the httprc default allows all URLs. See
+// the package documentation for details.
 func NewCache(ctx context.Context, client *httprc.Client) (*Cache, error) {
 	ctrl, err := client.Start(ctx)
 	if err != nil {
@@ -78,7 +102,12 @@ func NewCache(ctx context.Context, client *httprc.Client) (*Cache, error) {
 	return &Cache{ctrl: ctrl}, nil
 }
 
-// Register registers a URL to be managed by the cache.
+// Register registers a URL to be managed by the cache. URLs must be
+// registered before `Lookup` will return a value for them.
+//
+// Register does not perform URL validation — the whitelist configured
+// on the httprc.Client passed to NewCache is the trust boundary. See
+// the package documentation for details.
 func (c *Cache) Register(ctx context.Context, u string, options ...RegisterOption) error {
 	var parseOptions []jwk.ParseOption
 	var resourceOptions []httprc.NewResourceOption
